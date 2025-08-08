@@ -1,0 +1,74 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for website
+#
+- name: Install HTTPD package on Debian
+  ansible.builtin.package:
+    name: httpd # Use 'apache2' for Debian/Ubuntu based systems
+    state: present
+  when: ansible_os_family == "Debian"
+
+
+- name: Install httpd on RedHat
+  yum:
+    name: httpd
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+
+- name: Start and enable httpd service
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_os_family == "Debian"
+
+
+- name: Ensure /var/www/html directory exists
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "Debian"
+
+
+- name: Copy index.html to web server
+  ansible.builtin.copy:
+    src: files/index.html # Path to your local index.html file
+    dest: /var/www/html/index.html
+    mode: '0644'
+  when: ansible_os_family == "Debian"
+ 
+
+- name: Copy sample index.html to web root
+  copy:
+    src: files/index.html 
+    dest: /var/www/html/index.html
+    mode: '0644'
+  when: ansible_facts['os_family'] == "RedHat"
+
+
+- name: Start and enable HTTPD service
+  ansible.builtin.service:
+    name: httpd # Use 'apache2' for Debian/Ubuntu based systems
+    state: started
+    enabled: true
+  when: ansible_os_family == "Debian"
+
+
+- name: Start and enable httpd service
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_facts['os_family'] == "RedHat"
+
+
+- name: Allow HTTP service in firewalld
+    firewalld:
+      service: http
+      permanent: true
+      state: enabled
+      immediate: yes
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes

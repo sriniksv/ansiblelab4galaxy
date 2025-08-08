@@ -1,0 +1,63 @@
+---
+
+- name: Install apache2 on Debian/Ubuntu
+  ansible.builtin.package:
+    name: apache2
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install httpd on RedHat/CentOS
+  ansible.builtin.yum:
+    name: httpd
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Start and enable apache2 service on Debian/Ubuntu
+  ansible.builtin.service:
+    name: apache2
+    state: started
+    enabled: true
+  when: ansible_os_family == "Debian"
+
+  
+- name: Install httpd on CentOS/RedHat
+  ansible.builtin.yum:
+    name: httpd
+    state: present
+  when: ansible_os_family == "RedHat"  
+
+
+- name: Start and enable httpd service on RedHat/CentOS
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure web root directory exists (Debian)
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "Debian"
+
+- name: Ensure web root directory exists (RedHat)
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "RedHat"
+
+- name: Copy index.html to Debian/Ubuntu web server
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    mode: '0644'
+  when: ansible_os_family == "Debian"
+
+- name: Copy index.html to RedHat/CentOS web server
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    mode: '0644'
+  when: ansible_os_family == "RedHat"
